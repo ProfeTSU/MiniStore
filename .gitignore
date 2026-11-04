@@ -1,0 +1,10 @@
+# Carpetas que genera NetBeans al compilar (Ant)
+/build/
+/dist/
+
+# Configuración personal de cada computador
+/nbproject/private/
+
+# Archivos del sistema operativo
+Thumbs.db
+.DS_Store
