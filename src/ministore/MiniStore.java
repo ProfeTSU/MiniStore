@@ -8,7 +8,6 @@ import ministore.modelo.Categoria;
 import ministore.modelo.Producto; 
 import ministore.modelo.Cliente;
 import ministore.modelo.DetalleVenta;
-import ministore.modelo.VentaOld;
 import ministore.modelo.Usuario;
 import ministore.modelo.Rol;
 import ministore.util.Seguridad;

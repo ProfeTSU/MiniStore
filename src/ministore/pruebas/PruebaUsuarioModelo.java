@@ -59,5 +59,9 @@ public class PruebaUsuarioModelo {
         carlos.setActivo(false);
         System.out.println("¿Activo? " + carlos.isActivo());                              // false
         System.out.println("¿Clave correcta? " + carlos.verificarContrasena("carlos123")); // true (ver nota)
+        
+        // Nota: desactivar NO cambia la contraseña: verificarContrasena sigue respondiendo true.
+        // Quien impide la entrada de un usuario desactivado es el LOGIN, que revisa isActivo().
+        System.out.println("¿Clave correcta? " + carlos.verificarContrasena("carlos123")); // true
     }
 }

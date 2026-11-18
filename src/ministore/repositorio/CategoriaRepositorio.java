@@ -1,114 +1,156 @@
 /*
  * =========================================================================
  *  CLASE: CategoriaRepositorio            PAQUETE: ministore.repositorio
+ *  VERSIÓN: MySQL (sesión 12)
  * =========================================================================
  *
  *  ¿PARA QUÉ SIRVE?
- *    Es la "bodega" de las categorías (Granos, Lácteos, Aseo, Bebidas).
- *    Guarda TODAS las categorías de la tienda y permite consultarlas.
- *    Cubre el RF6: buscar y filtrar productos por categoría.
+ *    Es la "bodega" de las categorías (Granos, Lácteos...). Ahora la bodega
+ *    no es un ArrayList: es la tabla categorias de MySQL. Los datos ya no
+ *    se pierden al cerrar el programa. Cubre el RF6 (filtrar por categoría).
  *
  *  ¿CON QUIÉN SE CONECTA?
  *    Usa:
- *      - Categoria            → las guarda en una lista (ArrayList).
+ *      - ConexionBD   → para abrir la conexión con MySQL.
+ *      - Categoria    → convierte cada fila de la tabla en un objeto.
  *    La usan:
- *      - ProductoRepositorio  → toma de aquí las categorías de sus datos de prueba.
- *      - ProductoControlador  → le pide la lista para llenar cmbCategoria.
+ *      - ProductoRepositorio y ProductoControlador (para cmbCategoria).
  *
  *  ¿QUÉ DEBE EXISTIR ANTES DE CREAR ESTA CLASE?
- *    La clase Categoria (paquete ministore.modelo), con setId() e isActivo().
+ *    - La clase ConexionBD (paquete util), probada con PruebaConexion.
+ *    - La tabla categorias, creada con los scripts 01 y 02.
  *
- *  ¿POR QUÉ EXISTE, SI ANTES NO HACÍA FALTA?
- *    Antes, ProductoRepositorio creaba sus propias categorías. Pero la ventana
- *    necesita mostrarlas en una lista desplegable: si los productos tuvieran
- *    sus categorías y la lista las suyas, existirían DOS objetos "Granos"
- *    distintos. Con este repositorio, todos comparten LOS MISMOS objetos.
+ *  ¿QUÉ CAMBIÓ RESPECTO A LA VERSIÓN EN MEMORIA?
+ *    Por FUERA, nada: los mismos métodos, con los mismos parámetros y lo
+ *    mismo que devuelven. Por eso ProductoControlador y VentanaProductos
+ *    no cambian ni una línea. Por DENTRO, cada método ejecuta SQL:
+ *      guardar          →  INSERT
+ *      listar           →  SELECT ... WHERE activo = TRUE
+ *      buscarPorNombre  →  SELECT ... WHERE nombre = ?
+ *    Ya no hay ArrayList categorias, ni siguienteId (lo hace el
+ *    AUTO_INCREMENT), ni cargarDatosDePrueba (lo hace el script 02).
  * =========================================================================
  */
-package ministore.repositorio;   // Paquete de la CAPA DE DATOS: dónde se guardan los objetos.
+package ministore.repositorio;
 
-import java.util.ArrayList;          // La lista que crece sola.
-import ministore.modelo.Categoria;   // Categoria está en OTRO paquete: hay que importarla.
+import java.sql.Connection;          // La conexión abierta con MySQL.
+import java.sql.PreparedStatement;   // Una instrucción SQL con signos ? para los valores.
+import java.sql.ResultSet;           // Las filas que devuelve un SELECT.
+import java.sql.SQLException;        // El error de la base de datos.
+import java.sql.Statement;           // Se usa por la constante RETURN_GENERATED_KEYS.
+import java.util.ArrayList;
+import ministore.modelo.Categoria;
+import ministore.util.ConexionBD;
 
 /**
- * La bodega de categorías. Hoy guarda en un ArrayList (en memoria);
- * en la sesión 12 se reemplaza por MySQL con los mismos métodos.
+ * La bodega de categorías, guardada en MySQL.
  *
  * @author Mauricio
  */
 public class CategoriaRepositorio {
 
     // =====================================================================
-    // ¿Qué necesita saber?  →  ATRIBUTOS
+    // CONSTRUCTOR
+    // Ya no crea una lista ni carga datos de prueba: los datos viven en
+    // MySQL. Se conserva (vacío) para que el resto del programa, que hace
+    // new CategoriaRepositorio(), siga funcionando igual.
     // =====================================================================
-
-    private ArrayList<Categoria> categorias;   // Aquí viven todas las categorías,
-                                               // incluidas las desactivadas.
-
-    private int siguienteId;                   // El número que recibirá la PRÓXIMA categoría:
-                                               // 1, 2, 3... (en MySQL lo hará el AUTO_INCREMENT).
-
-    // =====================================================================
-    // ¿Cómo nace?  →  CONSTRUCTOR
-    // No recibe parámetros: la bodega siempre arranca igual.
-    // =====================================================================
-
     public CategoriaRepositorio() {
-        categorias = new ArrayList<>();        // CREA la lista vacía. Sin esta línea valdría null
-                                               // y el primer add haría fallar el programa.
-        siguienteId = 1;                       // La primera categoría recibirá el id 1.
-        cargarDatosDePrueba();                 // Llena la bodega para que no arranque vacía.
     }
 
     // =====================================================================
-    // C: CREATE (crear)  →  guardar
+    // C: CREATE  →  guardar  (INSERT)
     // =====================================================================
 
-    // Guarda una categoría nueva. Es void porque siempre se puede guardar.
+    // Guarda una categoría nueva. MySQL le asigna el id (AUTO_INCREMENT),
+    // y aquí se le pone ese id al objeto, igual que antes hacía siguienteId.
     public void guardar(Categoria categoria) {
-        categoria.setId(siguienteId);          // 1. Le asigna su número.
-        siguienteId++;                         // 2. Prepara el número de la siguiente.
-        categorias.add(categoria);             // 3. La agrega al final de la lista.
+        // El ? es un "espacio" que se llena después con setString.
+        String sql = "INSERT INTO categorias (nombre) VALUES (?)";
+
+        // try-with-resources: la conexión y la instrucción se cierran solas.
+        // RETURN_GENERATED_KEYS: "después del INSERT, devuélveme el id que asignaste".
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setString(1, categoria.getNombre());   // Llena el ? número 1 con el nombre.
+            ps.executeUpdate();                       // Ejecuta el INSERT (UPDATE: porque CAMBIA datos).
+
+            try (ResultSet llaves = ps.getGeneratedKeys()) {   // El id que asignó MySQL.
+                if (llaves.next()) {
+                    categoria.setId(llaves.getInt(1));         // Se lo pone al objeto.
+                }
+            }
+        } catch (SQLException e) {
+            // Si algo falla (por ejemplo, una categoría repetida), se avisa con un error
+            // que explica qué pasó. Ver la explicación al final de la clase.
+            throw new RuntimeException("Error al guardar la categoría: " + e.getMessage(), e);
+        }
     }
 
     // =====================================================================
-    // R: READ (leer)  →  listar y buscarPorNombre
+    // R: READ  →  listar  (SELECT con WHERE activo = TRUE)
     // =====================================================================
 
-    // Devuelve SOLO las categorías activas: son las que se muestran en cmbCategoria.
-    // No devuelve la lista original, porque esa incluye las desactivadas.
+    // Devuelve SOLO las categorías activas, ordenadas por id
+    // (las que se muestran en cmbCategoria).
     public ArrayList<Categoria> listar() {
-        ArrayList<Categoria> activas = new ArrayList<>();   // Una lista nueva, vacía.
-        for (Categoria c : categorias) {                    // "Para cada categoría c".
-            if (c.isActivo()) {                             // Si está activa...
-                activas.add(c);                             // ...pasa a la lista nueva.
+        ArrayList<Categoria> activas = new ArrayList<>();
+        String sql = "SELECT id, nombre FROM categorias WHERE activo = TRUE ORDER BY id";
+
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {          // executeQuery: para SELECT (solo LEE).
+
+            // El ResultSet es como una tabla con un "cursor".
+            // next() avanza a la siguiente fila y devuelve false cuando ya no hay más.
+            while (rs.next()) {
+                // Cada FILA se convierte en un OBJETO Categoria.
+                activas.add(new Categoria(rs.getInt("id"), rs.getString("nombre")));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al listar las categorías: " + e.getMessage(), e);
         }
         return activas;
     }
 
-    // Busca una categoría por su nombre. Devuelve la categoría o null si no existe.
-    // La usa ProductoRepositorio para asignarle a cada producto de prueba
-    // el MISMO objeto que verá la lista desplegable.
+    // =====================================================================
+    // R: READ  →  buscarPorNombre  (SELECT con WHERE nombre = ?)
+    // =====================================================================
+
+    // Devuelve la categoría con ese nombre, o null si no existe.
     public Categoria buscarPorNombre(String nombre) {
-        for (Categoria c : categorias) {
-            if (c.getNombre().equals(nombre)) {   // Los textos se comparan con equals, nunca con ==.
-                return c;                         // La encontró: return termina el método aquí.
+        String sql = "SELECT id, nombre FROM categorias WHERE nombre = ?";
+
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);                      // Llena el ? con el nombre buscado.
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {                          // ¿Hay al menos una fila?
+                    return new Categoria(rs.getInt("id"), rs.getString("nombre"));
+                }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al buscar la categoría: " + e.getMessage(), e);
         }
-        return null;                              // Recorrió toda la lista y no la encontró.
+        return null;                                      // No había ninguna fila: no existe.
     }
 
     // =====================================================================
-    // DATOS DE PRUEBA
-    // private: solo lo usa el constructor; nadie de afuera debe llamarlo.
-    // Usa guardar(), así cada categoría también recibe su id (1, 2, 3, 4).
+    // ¿POR QUÉ throw new RuntimeException(...) EN EL catch?
+    //   Los métodos de JDBC lanzan SQLException. Si se dejara pasar con
+    //   "throws SQLException", habría que cambiar la firma de los métodos,
+    //   y el controlador y la ventana tendrían que cambiar también.
+    //   RuntimeException no obliga a cambiar nada: si la base de datos falla,
+    //   el programa se detiene con un mensaje claro de qué pasó, en lugar de
+    //   seguir como si nada con una lista vacía.
+    //
+    // ¿POR QUÉ ? Y NO PEGAR EL VALOR EN EL TEXTO DEL SQL?
+    //   "... WHERE nombre = '" + nombre + "'" falla si el nombre tiene una
+    //   comilla (por ejemplo O'Brien) y permite la INYECCIÓN SQL: alguien
+    //   podría escribir un texto que cambie la instrucción. Con ? y setString,
+    //   el valor siempre se trata como un dato, nunca como parte del SQL.
     // =====================================================================
-
-    private void cargarDatosDePrueba() {
-        guardar(new Categoria(0, "Granos"));      // El id 0 es provisional:
-        guardar(new Categoria(0, "Lácteos"));     // guardar() lo reemplaza
-        guardar(new Categoria(0, "Aseo"));        // por 1, 2, 3 y 4.
-        guardar(new Categoria(0, "Bebidas"));
-    }
 }
