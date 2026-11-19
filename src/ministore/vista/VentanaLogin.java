@@ -4,9 +4,9 @@
  */
 package ministore.vista;
 // PARTE A: los import
-import javax.swing.JOptionPane;                      // Para el saludo (por ahora).
+//import javax.swing.JOptionPane;                      // Para el saludo (por ahora).
 import ministore.controlador.LoginControlador;       // El controlador que recibe la ventana.
-import ministore.repositorio.UsuarioRepositorio;     // Lo usa el main para probar la ventana.
+//import ministore.repositorio.UsuarioRepositorio;     // Lo usa el main para probar la ventana.
 import ministore.Aplicacion;                         // La que abre la ventana principal.
 /**
  *
@@ -24,7 +24,7 @@ public class VentanaLogin extends javax.swing.JFrame {
      * Creates new form VentanaLogin
      */
     // =====================================================================
-    // PARTE C: CONSTRUCTOR. RECIBE el controlador del login.
+    // PARTE C: CONSTRUCTOR. RECIBE el controlador del login y la aplicación.
     // =====================================================================
     public VentanaLogin(LoginControlador login, Aplicacion app) {
         initComponents();                        // PRIMERO: crea los componentes del diseñador.
@@ -142,9 +142,10 @@ public class VentanaLogin extends javax.swing.JFrame {
             txtContrasena.requestFocus();           // El cursor vuelve a la contraseña.
             return;
         }
-        // Entró. Por ahora solo se saluda; en el siguiente paso aquí se abrirá VentanaPrincipal.
-        //JOptionPane.showMessageDialog(this, mensaje);
-        // Entró: se cierra el login y se abre el menú principal con el usuario que entró.
+        // Entró. Por ahora solo se saluda; en el siguiente paso aquí se abrirá VentanaPrincipal. Esto se borra
+        //JOptionPane.showMessageDialog(this, mensaje); esto se borra
+        // Entró: se cierra el login y se abre el menú principal con el usuario que entró. esto se borra
+        
         dispose();                                           // Cierra SOLO esta ventana.
         app.abrirPrincipal(login.getUsuarioActual());        // Aplicacion abre la principal.
     }//GEN-LAST:event_btnIngresarActionPerformed
@@ -177,8 +178,9 @@ public class VentanaLogin extends javax.swing.JFrame {
 
         /* Create and display the form */
         // java.awt.EventQueue.invokeLater(() -> new VentanaLogin().setVisible(true));   // borrar
-        // Para probar esta ventana sola: se crean el repositorio y el controlador.
-        // (Más adelante lo hará el main del proyecto: MiniStore.java).
+        // Para probar esta ventana sola: se crean el repositorio y el controlador. //se borra
+        // (Más adelante lo hará el main del proyecto: MiniStore.java). //se borra
+        // Aplicacion crea los repositorios y el controlador, y abre el login.
         java.awt.EventQueue.invokeLater(() -> {
             new Aplicacion().iniciar();          // Aplicacion crea todo y abre el login.
         });
