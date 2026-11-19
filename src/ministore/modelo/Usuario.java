@@ -93,7 +93,25 @@ public class Usuario {
         this.activo = true;                                        // Todo usuario nuevo puede entrar.
                                                                    // (Un boolean sin asignar vale false).
     }
-
+    // =====================================================================
+    // SEGUNDO CONSTRUCTOR: reconstruir un usuario que YA EXISTE en MySQL.
+    // Lo usa SOLO UsuarioRepositorio. Recibe el HASH, no la contraseña:
+    // si se usara el primer constructor, se calcularía el hash DEL hash.
+    // SOBRECARGA: Java elige el constructor por los datos que recibe (4 o 6).
+    // =====================================================================
+    public Usuario(int id, String nombreUsuario, String contrasenaHash,
+                   String nombreCompleto, Rol rol, boolean activo) {
+        this.id = id;                            // El id que asignó MySQL.
+        this.nombreUsuario = nombreUsuario;
+        this.contrasenaHash = contrasenaHash;    // YA es la huella: se guarda tal cual.
+        this.nombreCompleto = nombreCompleto;
+        this.rol = rol;                          // El Rol que armó el repositorio.
+        this.activo = activo;                    // Puede venir en false (desactivado).
+    }
+    
+    
+    
+    
     // =====================================================================
     // PREGUNTA 3: ¿Qué reglas debe cumplir?  →  SET CON VALIDACIÓN (a mano)
     // Lo que identifica al usuario no puede quedar vacío.

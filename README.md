@@ -16,8 +16,17 @@ Vista (Swing)  →  Controlador  →  Repositorio  →  MySQL
  lee y muestra      valida          guarda (SQL)
 ```
 
+La clase `Aplicacion` arma el programa: crea los repositorios una sola vez
+(para que todas las ventanas compartan los mismos) y abre cada ventana con su
+controlador.
+
+```
+MiniStore (main)  →  Aplicacion  →  VentanaLogin  →  VentanaPrincipal  →  Productos, Clientes...
+```
+
 ## Estructura del proyecto
-- `ministore.modelo`: clases del dominio (Categoria, Producto, Cliente, Venta...)
+- `ministore`: `MiniStore` (el main del proyecto) y `Aplicacion` (arma el programa)
+- `ministore.modelo`: clases del dominio (Categoria, Producto, Cliente, Usuario, Venta...)
 - `ministore.repositorio`: acceso a la base de datos MySQL (los DAO)
 - `ministore.controlador`: validaciones y lógica entre la vista y los repositorios
 - `ministore.vista`: interfaz gráfica (Swing)
@@ -32,13 +41,14 @@ Vista (Swing)  →  Controlador  →  Repositorio  →  MySQL
 - El conector `mysql-connector-j` (ya incluido en la carpeta `lib`)
 
 ## Preparar la base de datos
-1. En MySQL Workbench, conectado como **root**, ejecutar en orden los scripts de la carpeta `sql`:
+1. Descargar los scripts SQL de la carpeta compartida por el docente (Drive).
+2. En MySQL Workbench, conectado como **root**, ejecutarlos en orden:
    1. `01_crear_bd_ministore.sql`: crea la base de datos `ministore` y sus 8 tablas.
    2. `02_datos_prueba_ministore.sql`: inserta los datos de prueba.
    3. `03_consultas_ministore.sql`: consultas de ejemplo (opcional).
-2. En NetBeans, abrir `ministore/util/ConexionBD.java` y escribir en las constantes
+3. En NetBeans, abrir `ministore/util/ConexionBD.java` y escribir en las constantes
    `USUARIO` y `CLAVE` el usuario y la contraseña de su propio MySQL.
-3. Ejecutar `ministore/pruebas/PruebaConexion.java` con **Shift + F6**. Debe mostrar:
+4. Ejecutar `ministore/pruebas/PruebaConexion.java` con **Shift + F6**. Debe mostrar:
    ```
    ¡Conexión exitosa!
    Base de datos: ministore
@@ -51,8 +61,17 @@ Si una prueba cambia los datos, se vuelve al estado inicial ejecutando otra vez 
 1. Clonar el repositorio o descargarlo como ZIP.
 2. Abrirlo en NetBeans: **File → Open Project**.
 3. Preparar la base de datos (sección anterior).
-4. Por ahora, cada ventana se ejecuta por separado: abrir el archivo de la ventana
-   (por ejemplo, `ministore/vista/VentanaProductos.java`) y presionar **Shift + F6**.
+4. Ejecutar el proyecto con **F6** (Run Project): abre el inicio de sesión.
+
+Usuarios de prueba (la contraseña es el usuario + `123`):
+
+| Usuario | Contraseña | Rol |
+|---|---|---|
+| admin | admin123 | Administrador |
+| carlos | carlos123 | Vendedor |
+| camilo | camilo123 | Vendedor desactivado (no puede entrar) |
+
+Cada ventana también se puede probar sola: abrir su archivo y presionar **Shift + F6**.
 
 Si una ventana muestra datos viejos después de un cambio en el código, usar
 **Clean and Build** (Shift + F11) y volver a ejecutarla.
@@ -61,8 +80,15 @@ Si una ventana muestra datos viejos después de un cambio en el código, usar
 
 | Vista | Estado |
 |---|---|
+| VentanaLogin | Conectada a MySQL |
+| VentanaPrincipal | Conectada (el menú cambia según el rol) |
 | VentanaProductos | Conectada a MySQL |
 | VentanaClientes | Conectada a MySQL |
-| VentanaLogin, VentanaPrincipal | En construcción |
 | VentanaVenta, DialogoComprobante | Pendientes |
-|
+| VentanaUsuarios, VentanaReportes, VentanaConfiguracion | Pendientes |
+
+## Versiones (etiquetas de Git)
+- `v4-memoria`: última versión con los datos en memoria (ArrayList), antes de MySQL.
+
+## Autor
+Mauricio A. Ledesma - Docente Programación I

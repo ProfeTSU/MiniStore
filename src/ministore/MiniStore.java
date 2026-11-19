@@ -23,9 +23,8 @@ public class MiniStore {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
-    
-    
+        // El programa arranca aquí: Aplicacion crea los repositorios y abre el login.
+        java.awt.EventQueue.invokeLater(() -> new Aplicacion().iniciar()); 
     }
     
 }

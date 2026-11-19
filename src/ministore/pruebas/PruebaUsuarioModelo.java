@@ -63,5 +63,13 @@ public class PruebaUsuarioModelo {
         // Nota: desactivar NO cambia la contraseña: verificarContrasena sigue respondiendo true.
         // Quien impide la entrada de un usuario desactivado es el LOGIN, que revisa isActivo().
         System.out.println("¿Clave correcta? " + carlos.verificarContrasena("carlos123")); // true
+        // Segundo constructor: un usuario que viene de MySQL (con su hash).
+        Rol vendedorBD = new Rol(2, "Vendedor");
+        Usuario carlosBD = new Usuario(2, "carlos",
+                "ac9c2c34c9f7ad52528c3422af40a66e2e24aaf2a727831255413c9470158984",
+                "Carlos Gómez", vendedorBD, true);
+        System.out.println("¿carlos123 es correcta? " + carlosBD.verificarContrasena("carlos123"));  // true
+        System.out.println("¿otra es correcta? " + carlosBD.verificarContrasena("otra"));            // false
+        System.out.println(carlosBD.obtenerInformacion());                                        // Carlos Gómez (Vendedor)
     }
 }
