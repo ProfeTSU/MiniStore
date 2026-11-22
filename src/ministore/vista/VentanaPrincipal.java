@@ -164,7 +164,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     private void btnUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuariosActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Módulo en construcción");   // Todavía no existe la ventana.
+        // JOptionPane.showMessageDialog(this, "Módulo en construcción");   // Todavía no existe la ventana.
+        app.abrirUsuarios(usuario);              // Aplicacion abre Usuarios; el administrador no podrá desactivarse.
     }//GEN-LAST:event_btnUsuariosActionPerformed
 
     private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed

@@ -35,6 +35,9 @@ import ministore.vista.VentanaConfiguracion;
 import ministore.controlador.VentaControlador;
 import ministore.repositorio.VentaRepositorio;
 import ministore.vista.VentanaVenta;
+import ministore.controlador.UsuarioControlador;
+import ministore.repositorio.RolRepositorio;
+import ministore.vista.VentanaUsuarios;
 /**
  * Arma la aplicación y abre cada ventana.
  *
@@ -49,22 +52,20 @@ public class Aplicacion {
     private UsuarioRepositorio usuarios = new UsuarioRepositorio();
     private TiendaRepositorio tiendas = new TiendaRepositorio();     // La usarán Configuración y Venta.
     private VentaRepositorio ventas = new VentaRepositorio();
+    private RolRepositorio roles = new RolRepositorio();
 
     // Arranca el programa: abre el login.
     public void iniciar() {
         new VentanaLogin(new LoginControlador(usuarios), this).setVisible(true);
     }
-
     // Abre el menú principal para el usuario que inició sesión.
     public void abrirPrincipal(Usuario usuario) {
         new VentanaPrincipal(this, usuario).setVisible(true);
     }
-
     // Abre Productos con su controlador.
     public void abrirProductos() {
         new VentanaProductos(new ProductoControlador(productos, categorias)).setVisible(true);
     }
-
     // Abre Clientes con su controlador.
     public void abrirClientes() {
         new VentanaClientes(new ClienteControlador(clientes)).setVisible(true);
@@ -77,5 +78,10 @@ public class Aplicacion {
     // Recibe el usuario porque Aplicacion no sabe quién entró; lo sabe VentanaPrincipal.
     public void abrirVenta(Usuario usuario) {
         new VentanaVenta(new VentaControlador(ventas, productos, clientes, tiendas, usuario)).setVisible(true);
+    }
+    // Abre Usuarios (solo el administrador). Recibe el usuario que inició sesión
+    // para que el controlador no le permita desactivarse a sí mismo.
+    public void abrirUsuarios(Usuario usuario) {
+        new VentanaUsuarios(new UsuarioControlador(usuarios, roles, usuario)).setVisible(true);
     }
 }
