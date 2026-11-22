@@ -21,7 +21,7 @@ La clase `Aplicacion` arma el programa: crea los repositorios una sola vez
 controlador.
 
 ```
-MiniStore (main)  →  Aplicacion  →  VentanaLogin  →  VentanaPrincipal  →  Productos, Clientes...
+MiniStore (main)  →  Aplicacion  →  VentanaLogin  →  VentanaPrincipal  →  Productos, Clientes, Venta...
 ```
 
 ## Estructura del proyecto
@@ -76,6 +76,19 @@ Cada ventana también se puede probar sola: abrir su archivo y presionar **Shift
 Si una ventana muestra datos viejos después de un cambio en el código, usar
 **Clean and Build** (Shift + F11) y volver a ejecutarla.
 
+## Cómo hacer una venta
+1. Entrar con cualquier usuario y pulsar **Nueva venta**.
+2. La venta empieza a nombre del **Consumidor final**. Para otro cliente, escribir
+   su documento y pulsar **Buscar** (por ejemplo `1234567`, Ana Pérez).
+3. Elegir el producto, escribir la cantidad y pulsar **Agregar**. Para quitar una
+   línea, seleccionarla en la tabla y pulsar **Quitar**.
+4. Pulsar **Confirmar venta**: se guarda en MySQL, se descuenta el stock y se
+   muestra el comprobante, que se puede imprimir.
+
+La venta se guarda con una **transacción** (todo o nada): si algún producto ya no
+tiene stock, no se guarda nada. Por eso el número de la venta puede saltar
+(por ejemplo de 14 a 16): MySQL no reutiliza los números de una venta deshecha.
+
 ## Estado del proyecto
 
 | Vista | Estado |
@@ -84,11 +97,15 @@ Si una ventana muestra datos viejos después de un cambio en el código, usar
 | VentanaPrincipal | Conectada (el menú cambia según el rol) |
 | VentanaProductos | Conectada a MySQL |
 | VentanaClientes | Conectada a MySQL |
-| VentanaVenta, DialogoComprobante | Pendientes |
-| VentanaUsuarios, VentanaReportes, VentanaConfiguracion | Pendientes |
+| VentanaConfiguracion | Conectada a MySQL (solo el administrador) |
+| VentanaVenta, DialogoComprobante | Conectadas a MySQL (con transacción) |
+| VentanaUsuarios, VentanaReportes | Pendientes |
 
 ## Versiones (etiquetas de Git)
 - `v4-memoria`: última versión con los datos en memoria (ArrayList), antes de MySQL.
+- `v5-clientes`: Productos y Clientes conectados a MySQL.
+- `v6-login`: inicio de sesión, menú principal por roles y la clase `Aplicacion`.
+- `v7-venta`: Configuración de la tienda y la venta completa con comprobante.
 
 ## Autor
 Mauricio A. Ledesma - Docente Programación I

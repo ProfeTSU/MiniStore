@@ -32,6 +32,9 @@ import ministore.vista.VentanaProductos;
 import ministore.controlador.TiendaControlador;
 import ministore.repositorio.TiendaRepositorio;
 import ministore.vista.VentanaConfiguracion;
+import ministore.controlador.VentaControlador;
+import ministore.repositorio.VentaRepositorio;
+import ministore.vista.VentanaVenta;
 /**
  * Arma la aplicación y abre cada ventana.
  *
@@ -45,6 +48,7 @@ public class Aplicacion {
     private ClienteRepositorio clientes = new ClienteRepositorio();
     private UsuarioRepositorio usuarios = new UsuarioRepositorio();
     private TiendaRepositorio tiendas = new TiendaRepositorio();     // La usarán Configuración y Venta.
+    private VentaRepositorio ventas = new VentaRepositorio();
 
     // Arranca el programa: abre el login.
     public void iniciar() {
@@ -68,5 +72,10 @@ public class Aplicacion {
     // Abre Configuración (solo el administrador) con su controlador.
     public void abrirConfiguracion() {
         new VentanaConfiguracion(new TiendaControlador(tiendas)).setVisible(true);
+    }
+    // Abre la venta para el usuario que inició sesión: él queda como vendedor (RF10).
+    // Recibe el usuario porque Aplicacion no sabe quién entró; lo sabe VentanaPrincipal.
+    public void abrirVenta(Usuario usuario) {
+        new VentanaVenta(new VentaControlador(ventas, productos, clientes, tiendas, usuario)).setVisible(true);
     }
 }

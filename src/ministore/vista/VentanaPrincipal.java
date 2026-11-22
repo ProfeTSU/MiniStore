@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;                      // Para "En construcción".
 import ministore.Aplicacion;                         // La que abre las demás ventanas.
 import ministore.modelo.Usuario;                     // Quien inició sesión.
 import ministore.repositorio.UsuarioRepositorio;     // Lo usa el main para probar la ventana.
+
 /**
  *
  * @author Mauricio
@@ -186,7 +187,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     private void btnVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVentaActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Módulo en construcción");   // Todavía no existe la ventana.
+        // JOptionPane.showMessageDialog(this, "Módulo en construcción");   // Todavía no existe la ventana.
+        app.abrirVenta(usuario);                 // Aplicacion abre la venta; el usuario queda como vendedor.
     }//GEN-LAST:event_btnVentaActionPerformed
 
     /**
