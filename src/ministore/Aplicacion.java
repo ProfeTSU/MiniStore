@@ -29,7 +29,9 @@ import ministore.vista.VentanaClientes;
 import ministore.vista.VentanaLogin;
 import ministore.vista.VentanaPrincipal;
 import ministore.vista.VentanaProductos;
-
+import ministore.controlador.TiendaControlador;
+import ministore.repositorio.TiendaRepositorio;
+import ministore.vista.VentanaConfiguracion;
 /**
  * Arma la aplicación y abre cada ventana.
  *
@@ -42,6 +44,7 @@ public class Aplicacion {
     private ProductoRepositorio productos = new ProductoRepositorio(categorias);
     private ClienteRepositorio clientes = new ClienteRepositorio();
     private UsuarioRepositorio usuarios = new UsuarioRepositorio();
+    private TiendaRepositorio tiendas = new TiendaRepositorio();     // La usarán Configuración y Venta.
 
     // Arranca el programa: abre el login.
     public void iniciar() {
@@ -61,5 +64,9 @@ public class Aplicacion {
     // Abre Clientes con su controlador.
     public void abrirClientes() {
         new VentanaClientes(new ClienteControlador(clientes)).setVisible(true);
+    }
+    // Abre Configuración (solo el administrador) con su controlador.
+    public void abrirConfiguracion() {
+        new VentanaConfiguracion(new TiendaControlador(tiendas)).setVisible(true);
     }
 }
