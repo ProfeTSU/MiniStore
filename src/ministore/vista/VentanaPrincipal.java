@@ -170,7 +170,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Módulo en construcción");   // Todavía no existe la ventana.
+        // JOptionPane.showMessageDialog(this, "Módulo en construcción");   // Todavía no existe la ventana.
+        app.abrirReportes();                     // Aplicacion abre Reportes con su controlador.
     }//GEN-LAST:event_btnReportesActionPerformed
 
     private void btnConfiguracionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfiguracionActionPerformed

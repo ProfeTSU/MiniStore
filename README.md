@@ -89,6 +89,16 @@ La venta se guarda con una **transacción** (todo o nada): si algún producto ya
 tiene stock, no se guarda nada. Por eso el número de la venta puede saltar
 (por ejemplo de 14 a 16): MySQL no reutiliza los números de una venta deshecha.
 
+## Módulos del administrador
+- **Usuarios:** crear usuarios (la contraseña se guarda como hash SHA-256, mínimo
+  6 caracteres) y desactivarlos. Un usuario desactivado no puede iniciar sesión y
+  no aparece en la tabla, pero sigue en MySQL (eliminación lógica). El
+  administrador no puede desactivarse a sí mismo.
+- **Reportes:** ventas, total vendido, utilidad y los 5 productos más vendidos de
+  los últimos 7 días (semanal) o 30 días (mensual). El botón **Productos para
+  reponer** muestra los productos con stock en el mínimo o por debajo.
+- **Configuración:** los datos de la tienda que aparecen en el comprobante.
+
 ## Estado del proyecto
 
 | Vista | Estado |
@@ -97,15 +107,22 @@ tiene stock, no se guarda nada. Por eso el número de la venta puede saltar
 | VentanaPrincipal | Conectada (el menú cambia según el rol) |
 | VentanaProductos | Conectada a MySQL |
 | VentanaClientes | Conectada a MySQL |
-| VentanaConfiguracion | Conectada a MySQL (solo el administrador) |
 | VentanaVenta, DialogoComprobante | Conectadas a MySQL (con transacción) |
-| VentanaUsuarios, VentanaReportes | Pendientes |
+| VentanaUsuarios | Conectada a MySQL (solo el administrador) |
+| VentanaReportes | Conectada a MySQL (solo el administrador) |
+| VentanaConfiguracion | Conectada a MySQL (solo el administrador) |
+
+### Mejoras propuestas (ejercicios)
+- Botón **Actualizar** en Usuarios (ver los comentarios PENDIENTE en
+  `UsuarioRepositorio` y `UsuarioControlador`).
+- Mostrar también los usuarios desactivados, con un botón **Reactivar**.
 
 ## Versiones (etiquetas de Git)
 - `v4-memoria`: última versión con los datos en memoria (ArrayList), antes de MySQL.
 - `v5-clientes`: Productos y Clientes conectados a MySQL.
 - `v6-login`: inicio de sesión, menú principal por roles y la clase `Aplicacion`.
 - `v7-venta`: Configuración de la tienda y la venta completa con comprobante.
+- `v8-completo`: Usuarios y Reportes. Todos los módulos del MiniStore funcionan.
 
 ## Autor
 Mauricio A. Ledesma - Docente Programación I

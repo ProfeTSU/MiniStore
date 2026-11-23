@@ -38,6 +38,9 @@ import ministore.vista.VentanaVenta;
 import ministore.controlador.UsuarioControlador;
 import ministore.repositorio.RolRepositorio;
 import ministore.vista.VentanaUsuarios;
+import ministore.controlador.ReporteControlador;
+import ministore.repositorio.ReporteRepositorio;
+import ministore.vista.VentanaReportes;
 /**
  * Arma la aplicación y abre cada ventana.
  *
@@ -53,6 +56,7 @@ public class Aplicacion {
     private TiendaRepositorio tiendas = new TiendaRepositorio();     // La usarán Configuración y Venta.
     private VentaRepositorio ventas = new VentaRepositorio();
     private RolRepositorio roles = new RolRepositorio();
+    private ReporteRepositorio reportes = new ReporteRepositorio();
 
     // Arranca el programa: abre el login.
     public void iniciar() {
@@ -83,5 +87,10 @@ public class Aplicacion {
     // para que el controlador no le permita desactivarse a sí mismo.
     public void abrirUsuarios(Usuario usuario) {
         new VentanaUsuarios(new UsuarioControlador(usuarios, roles, usuario)).setVisible(true);
+    }
+    // Abre Reportes (solo el administrador) con su controlador.
+    // No recibe el usuario: el reporte es el mismo para cualquier administrador.
+    public void abrirReportes() {
+        new VentanaReportes(new ReporteControlador(reportes, productos)).setVisible(true);
     }
 }
